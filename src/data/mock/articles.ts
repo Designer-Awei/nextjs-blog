@@ -1,15 +1,16 @@
 import type { Article } from "@/types";
+import { UNSPLASH } from "@/lib/unsplash";
 
 /**
- * 文章 mock 数据
+ * 文章默认 mock 数据（首次运行或 JSON 文件缺失时使用）
  */
-export const articles: Article[] = [
+export const defaultArticles: Article[] = [
   {
     slug: "nextjs-app-router-guide",
     title: "Next.js App Router 完全指南",
     excerpt:
       "深入理解 App Router 的路由模型、Server Components 与数据获取策略，构建高性能的现代 Web 应用。",
-    coverImage: "/covers/nextjs.svg",
+    coverImage: UNSPLASH.covers.nextjs,
     category: "前端开发",
     publishedAt: "2026-03-15",
     readTime: 8,
@@ -55,7 +56,7 @@ export const articles: Article[] = [
     title: "从苹果官网学 UI 设计原则",
     excerpt:
       "极简、留白、精致排版——解析 Apple 设计语言背后的核心思路，并如何应用到个人项目中。",
-    coverImage: "/covers/design.svg",
+    coverImage: UNSPLASH.covers.design,
     category: "设计",
     publishedAt: "2026-02-28",
     readTime: 6,
@@ -96,7 +97,7 @@ export const articles: Article[] = [
     title: "TypeScript 实用技巧精选",
     excerpt:
       "类型体操不必复杂——这些日常开发中真正好用的 TypeScript 模式，能显著提升代码质量。",
-    coverImage: "/covers/typescript.svg",
+    coverImage: UNSPLASH.covers.typescript,
     category: "编程语言",
     publishedAt: "2026-01-20",
     readTime: 10,
@@ -138,7 +139,7 @@ export const articles: Article[] = [
     title: "搭建个人博客的正确姿势",
     excerpt:
       "从选型到部署，分享我搭建这个 Next.js 博客的思考过程与技术决策。",
-    coverImage: "/covers/blog.svg",
+    coverImage: UNSPLASH.covers.blog,
     category: "随笔",
     publishedAt: "2025-12-10",
     readTime: 5,

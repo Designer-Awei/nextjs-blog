@@ -12,8 +12,8 @@ export const dynamic = "force-dynamic";
  */
 export default async function HomePage() {
   const author = await getAuthor();
-  const featuredArticles = getFeaturedArticles(3);
-  const allArticles = getAllArticles();
+  const featuredArticles = await getFeaturedArticles(3);
+  const allArticles = await getAllArticles();
 
   return (
     <>

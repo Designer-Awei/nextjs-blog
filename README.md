@@ -9,6 +9,7 @@
 - **文章详情** — 结构化内容渲染，支持标题、段落、引用与代码块
 - **Mock 数据** — 作者信息与文章数据均为本地 mock，便于后续替换为 CMS 或 MDX
 - **头像上传** — 支持本地上传、圆形裁剪框、拖拽调整位置与缩放，保存至 `public/images/avatar.jpg`
+- **文章管理** — 在线创建、编辑、删除文章，数据持久化至 `data/articles.json`
 
 ## 技术栈
 
@@ -50,8 +51,9 @@ src/
 编辑以下文件即可修改博客内容：
 
 - `data/author.json` — 个人信息（也可在首页「关于我」区块点击「编辑资料」在线修改）
+- `data/articles.json` — 文章数据（也可在 `/articles/manage` 在线管理）
 - `src/data/mock/author.ts` — 默认个人信息（JSON 文件缺失时使用）
-- `src/data/mock/articles.ts` — 文章标题、摘要、正文内容
+- `src/data/mock/articles.ts` — 默认文章数据（JSON 文件缺失时使用）
 
 ## 构建与部署
 

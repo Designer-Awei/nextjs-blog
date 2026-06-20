@@ -1,6 +1,6 @@
-import Link from "next/link";
 import type { ArticleSummary } from "@/types";
 import { ArticleCard } from "./ArticleCard";
+import { ArticleGridHeader } from "./ArticleGridHeader";
 
 interface ArticleGridProps {
   /** 文章列表 */
@@ -14,7 +14,7 @@ interface ArticleGridProps {
 }
 
 /**
- * 文章网格列表
+ * 站酷风格作品网格
  */
 export function ArticleGrid({
   articles,
@@ -22,33 +22,20 @@ export function ArticleGrid({
   showViewAll = false,
   showLabel = true,
 }: ArticleGridProps) {
-  const showHeader = title || showViewAll;
+  const showHeader = Boolean(title || showViewAll);
 
   return (
-    <section className="py-24">
-      <div className="mx-auto max-w-5xl px-6">
+    <section className="py-10">
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
         {showHeader && (
-          <div className="mb-12 flex items-end justify-between">
-            <div>
-              {showLabel && title && (
-                <p className="mb-2 text-sm font-medium text-accent">Blog</p>
-              )}
-              {title && (
-                <h2 className="text-display text-foreground">{title}</h2>
-              )}
-            </div>
-            {showViewAll && (
-              <Link
-                href="/articles"
-                className="text-sm text-accent transition-colors hover:text-accent-hover"
-              >
-                查看全部 →
-              </Link>
-            )}
-          </div>
+          <ArticleGridHeader
+            title={title}
+            showLabel={showLabel}
+            showViewAll={showViewAll}
+          />
         )}
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {articles.map((article) => (
             <ArticleCard key={article.slug} article={article} />
           ))}
