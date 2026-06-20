@@ -1,0 +1,27 @@
+import type { Author } from "@/types";
+
+/**
+ * 作者默认 mock 数据（首次运行或 JSON 文件缺失时使用）
+ */
+export const defaultAuthor: Author = {
+  name: "张明",
+  title: "全栈开发者 · 技术写作者",
+  bio: "热爱用代码构建优雅的产品体验。专注于 Web 前端、Node.js 与系统设计，同时也喜欢记录学习过程中的思考与沉淀。相信好的设计应当 invisible——像苹果的产品一样，让用户专注于内容本身。",
+  avatar: "/images/avatar.jpg",
+  location: "上海，中国",
+  email: "hello@example.com",
+  social: {
+    github: "https://github.com",
+    twitter: "https://twitter.com",
+    linkedin: "https://linkedin.com",
+    xiaohongshu: "https://www.xiaohongshu.com",
+  },
+  skills: [
+    "Next.js",
+    "React",
+    "TypeScript",
+    "Node.js",
+    "UI/UX",
+    "系统设计",
+  ],
+};
