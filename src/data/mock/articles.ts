@@ -15,6 +15,7 @@ export const defaultArticles: Article[] = [
     publishedAt: "2026-03-15",
     readTime: 8,
     tags: ["Next.js", "React", "SSR"],
+    status: "published",
     content: [
       {
         type: "paragraph",
@@ -61,6 +62,7 @@ export const defaultArticles: Article[] = [
     publishedAt: "2026-02-28",
     readTime: 6,
     tags: ["UI", "设计", "UX"],
+    status: "published",
     content: [
       {
         type: "paragraph",
@@ -102,6 +104,7 @@ export const defaultArticles: Article[] = [
     publishedAt: "2026-01-20",
     readTime: 10,
     tags: ["TypeScript", "最佳实践"],
+    status: "published",
     content: [
       {
         type: "paragraph",
@@ -144,6 +147,7 @@ export const defaultArticles: Article[] = [
     publishedAt: "2025-12-10",
     readTime: 5,
     tags: ["博客", "Next.js", "部署"],
+    status: "published",
     content: [
       {
         type: "paragraph",

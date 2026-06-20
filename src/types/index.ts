@@ -1,4 +1,9 @@
 /**
+ * 文章发布状态
+ */
+export type ArticleStatus = "draft" | "published";
+
+/**
  * 作者个人信息
  */
 export interface Author {
@@ -31,6 +36,8 @@ export interface ArticleSummary {
   publishedAt: string;
   readTime: number;
   tags: string[];
+  /** 发布状态 */
+  status: ArticleStatus;
 }
 
 /**

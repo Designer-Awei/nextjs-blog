@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import type { Article } from "@/types";
+import type { Article, ArticleStatus } from "@/types";
 import {
   createEmptyArticle,
   estimateReadTime,
@@ -69,11 +69,11 @@ export function ArticleEditorPanel({
   };
 
   /**
-   * 保存文章
+   * 提交文章
+   * @param nextStatus - 目标发布状态
    */
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
+  const submitArticle = useCallback(
+    async (nextStatus: ArticleStatus) => {
       setSaving(true);
       setError("");
 
@@ -84,6 +84,7 @@ export function ArticleEditorPanel({
           .map((t) => t.trim())
           .filter(Boolean),
         readTime: form.readTime || estimateReadTime(form.content),
+        status: nextStatus,
       };
 
       try {
@@ -110,8 +111,15 @@ export function ArticleEditorPanel({
         setSaving(false);
       }
     },
-    [form, isNew, onClose, onSaved, originalSlug, router, tagsInput]
+    [form, isNew, onClose, onSaved, originalSlug, router, tagsInput],
   );
+
+  /**
+   * 阻止表单默认提交
+   */
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+  };
 
   if (!open) return null;
 
@@ -233,20 +241,33 @@ export function ArticleEditorPanel({
             )}
           </div>
 
-          <div className="flex gap-3 border-t border-border px-6 py-4">
+          <div className="flex flex-wrap gap-3 border-t border-border px-6 py-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-full border border-border py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-surface"
+              className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-surface"
             >
               取消
             </button>
             <button
-              type="submit"
+              type="button"
               disabled={saving}
-              className="flex-1 rounded-full bg-accent py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+              onClick={() => submitArticle("draft")}
+              className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-surface disabled:opacity-60"
             >
-              {saving ? "保存中…" : "保存文章"}
+              {saving
+                ? "保存中…"
+                : form.status === "published"
+                  ? "下架"
+                  : "保存草稿"}
+            </button>
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => submitArticle("published")}
+              className="ml-auto rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+            >
+              {saving ? "保存中…" : "发布"}
             </button>
           </div>
         </form>

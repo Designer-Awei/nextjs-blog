@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 export default async function ArticleManagePage() {
   const articles = [...(await getArticles())].sort(
     (a, b) =>
-      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
   );
 
   return (

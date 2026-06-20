@@ -2,24 +2,51 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import {
   deleteArticle,
-  getArticleBySlug,
+  getArticleBySlugForManage,
   updateArticle,
 } from "@/lib/articles";
+import type { ArticleSaveMode } from "@/lib/article-validation";
+import type { ArticleStatus } from "@/types";
 
 interface RouteParams {
   params: Promise<{ slug: string }>;
 }
 
 /**
- * 获取单篇文章
+ * 解析更新请求中的发布状态
+ * @param body - 请求体
+ */
+function parseSaveOptions(body: Record<string, unknown>): {
+  status?: ArticleStatus;
+  mode: ArticleSaveMode;
+} {
+  const status =
+    body.status === "published"
+      ? "published"
+      : body.status === "draft"
+        ? "draft"
+        : undefined;
+  const mode: ArticleSaveMode =
+    status === "published" ? "publish" : "draft";
+  return { status, mode };
+}
+
+/**
+ * 获取单篇文章（管理端可读草稿）
  */
 export async function GET(_request: Request, { params }: RouteParams) {
-  const { slug } = await params;
-  const article = await getArticleBySlug(slug);
-  if (!article) {
-    return NextResponse.json({ error: "文章不存在" }, { status: 404 });
+  try {
+    const { slug } = await params;
+    const article = await getArticleBySlugForManage(slug);
+    if (!article) {
+      return NextResponse.json({ error: "文章不存在" }, { status: 404 });
+    }
+    return NextResponse.json(article);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "获取文章失败";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-  return NextResponse.json(article);
 }
 
 /**
@@ -28,8 +55,9 @@ export async function GET(_request: Request, { params }: RouteParams) {
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
     const { slug } = await params;
-    const body: unknown = await request.json();
-    const article = await updateArticle(slug, body);
+    const body = (await request.json()) as Record<string, unknown>;
+    const { status, mode } = parseSaveOptions(body);
+    const article = await updateArticle(slug, body, status, mode);
     revalidatePath("/");
     revalidatePath("/articles");
     revalidatePath(`/articles/${slug}`);

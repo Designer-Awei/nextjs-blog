@@ -1,7 +1,10 @@
-import type { Article, ArticleBlock } from "@/types";
+import type { Article, ArticleBlock, ArticleStatus } from "@/types";
 
 /** slug 合法字符 */
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/** 文章保存校验模式 */
+export type ArticleSaveMode = "draft" | "publish";
 
 /**
  * 将标题转为 URL slug
@@ -62,15 +65,25 @@ function validateBlock(block: unknown): ArticleBlock | null {
 }
 
 /**
+ * 解析发布状态
+ * @param value - 原始值
+ */
+function parseStatus(value: unknown): ArticleStatus {
+  return value === "published" ? "published" : "draft";
+}
+
+/**
  * 校验并规范化文章数据
  * @param data - 待校验原始数据
- * @param existingSlugs - 已有 slug 列表（用于唯一性校验）
+ * @param existingSlugs - 已有 slug 列表
  * @param originalSlug - 编辑时的原 slug
+ * @param mode - 草稿或发布校验模式
  */
 export function validateArticle(
   data: unknown,
   existingSlugs: string[] = [],
-  originalSlug?: string
+  originalSlug?: string,
+  mode: ArticleSaveMode = "publish",
 ): Article {
   if (!data || typeof data !== "object") {
     throw new Error("无效的文章数据");
@@ -82,11 +95,11 @@ export function validateArticle(
   const title = String(raw.title ?? "").trim();
   const excerpt = String(raw.excerpt ?? "").trim();
   const category = String(raw.category ?? "").trim();
-  const publishedAt = String(raw.publishedAt ?? "").trim();
+  const publishedAt =
+    String(raw.publishedAt ?? "").trim() ||
+    new Date().toISOString().slice(0, 10);
 
   if (!title) throw new Error("标题不能为空");
-  if (!excerpt) throw new Error("摘要不能为空");
-  if (!category) throw new Error("分类不能为空");
   if (!slug) throw new Error("Slug 不能为空");
   if (!SLUG_PATTERN.test(slug)) {
     throw new Error("Slug 仅允许小写字母、数字和连字符");
@@ -97,8 +110,12 @@ export function validateArticle(
     throw new Error("Slug 已存在，请更换");
   }
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(publishedAt)) {
-    throw new Error("发布日期格式应为 YYYY-MM-DD");
+  if (mode === "publish") {
+    if (!excerpt) throw new Error("摘要不能为空");
+    if (!category) throw new Error("分类不能为空");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(publishedAt)) {
+      throw new Error("发布日期格式应为 YYYY-MM-DD");
+    }
   }
 
   const tags = Array.isArray(raw.tags)
@@ -113,25 +130,29 @@ export function validateArticle(
     .map(validateBlock)
     .filter((b): b is ArticleBlock => b !== null);
 
-  if (content.length === 0) {
+  if (mode === "publish" && content.length === 0) {
     throw new Error("正文至少需要一段有效内容");
   }
 
   const readTime =
     typeof raw.readTime === "number" && raw.readTime > 0
       ? Math.round(raw.readTime)
-      : estimateReadTime(content);
+      : estimateReadTime(content.length > 0 ? content : [{ type: "paragraph", text: title }]);
+
+  const status = parseStatus(raw.status);
 
   return {
     slug,
     title,
-    excerpt,
-    coverImage: String(raw.coverImage ?? "/covers/default.svg").trim(),
-    category,
+    excerpt: excerpt || title,
+    coverImage: String(raw.coverImage ?? "").trim(),
+    category: category || "随笔",
     publishedAt,
     readTime,
     tags,
-    content,
+    status,
+    content:
+      content.length > 0 ? content : [{ type: "paragraph", text: title }],
   };
 }
 
@@ -144,11 +165,12 @@ export function createEmptyArticle(): Article {
     slug: "",
     title: "",
     excerpt: "",
-    coverImage: "/covers/default.svg",
+    coverImage: "",
     category: "随笔",
     publishedAt: today,
     readTime: 1,
     tags: [],
+    status: "draft",
     content: [{ type: "paragraph", text: "" }],
   };
 }

@@ -3,12 +3,31 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import type { Article } from "@/types";
+import type { Article, ArticleStatus } from "@/types";
 import { ArticleEditorPanel } from "./ArticleEditorPanel";
 
 interface ArticleManageListProps {
   /** 初始文章列表 */
   initialArticles: Article[];
+}
+
+/**
+ * 状态标签样式
+ * @param status - 发布状态
+ */
+function StatusBadge({ status }: { status: ArticleStatus }) {
+  const isPublished = status === "published";
+  return (
+    <span
+      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+        isPublished
+          ? "bg-emerald-500/10 text-emerald-600"
+          : "bg-amber-500/10 text-amber-600"
+      }`}
+    >
+      {isPublished ? "已发布" : "草稿"}
+    </span>
+  );
 }
 
 /**
@@ -111,6 +130,7 @@ export function ArticleManageList({ initialArticles }: ArticleManageListProps) {
           >
             <div className="min-w-0 flex-1">
               <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-muted">
+                <StatusBadge status={article.status} />
                 <span>{article.category}</span>
                 <span>·</span>
                 <span>{formatDate(article.publishedAt)}</span>
@@ -145,7 +165,7 @@ export function ArticleManageList({ initialArticles }: ArticleManageListProps) {
                 href={`/articles/${article.slug}`}
                 className="rounded-full border border-border px-4 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface"
               >
-                预览
+                {article.status === "published" ? "预览" : "查看"}
               </Link>
               <button
                 type="button"

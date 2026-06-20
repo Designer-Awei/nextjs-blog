@@ -6,6 +6,8 @@ import { Button, Tag } from "antd";
 import { ArrowLeft, Clock, Eye, Heart, MessageCircle } from "react-feather";
 import { ArticleContent } from "@/components/ArticleContent";
 import { getAllSlugs, getArticleBySlug } from "@/lib/articles";
+import { buildAvatarSrc } from "@/lib/avatar-url";
+import { resolveCoverImage } from "@/lib/cover-image";
 import { getArticleStats } from "@/lib/article-stats";
 import { getAuthor } from "@/lib/author";
 
@@ -80,7 +82,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         <header className="mt-4 overflow-hidden rounded-sm bg-background shadow-[var(--card-shadow)]">
           <div className="relative aspect-[16/9] w-full">
             <Image
-              src={article.coverImage}
+              src={resolveCoverImage(article.coverImage)}
               alt={article.title}
               fill
               priority
@@ -100,7 +102,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               <div className="flex items-center gap-2">
                 <div className="relative h-8 w-8 overflow-hidden rounded-full">
                   <Image
-                    src={author.avatar}
+                    src={buildAvatarSrc(author.avatar, author.avatarUpdatedAt)}
                     alt={author.name}
                     fill
                     className="object-cover"

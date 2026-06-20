@@ -1,10 +1,10 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { saveAvatarAndUpdateAuthor } from "@/lib/author";
+import { uploadAvatar } from "@/lib/author";
 import { ALLOWED_IMAGE_TYPES, MAX_UPLOAD_SIZE } from "@/lib/crop-image";
 
 /**
- * 上传并保存裁剪后的头像
+ * 上传并保存裁剪后的头像到 Supabase Storage
  */
 export async function POST(request: Request) {
   try {
@@ -17,24 +17,24 @@ export async function POST(request: Request) {
 
     if (
       !ALLOWED_IMAGE_TYPES.includes(
-        file.type as (typeof ALLOWED_IMAGE_TYPES)[number]
+        file.type as (typeof ALLOWED_IMAGE_TYPES)[number],
       )
     ) {
       return NextResponse.json(
         { error: "仅支持 JPG、PNG、WebP 格式" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (file.size > MAX_UPLOAD_SIZE) {
       return NextResponse.json(
         { error: "图片大小不能超过 5MB" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const { avatar, updatedAt } = await saveAvatarAndUpdateAuthor(buffer);
+    const { avatar, updatedAt } = await uploadAvatar(buffer, file.type);
 
     revalidatePath("/");
 

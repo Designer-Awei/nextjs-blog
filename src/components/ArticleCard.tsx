@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Tag } from "antd";
 import { Eye, Heart, MessageCircle, Clock } from "react-feather";
 import type { ArticleSummary } from "@/types";
+import { buildAvatarSrc } from "@/lib/avatar-url";
+import { resolveCoverImage } from "@/lib/cover-image";
 import { getArticleStats } from "@/lib/article-stats";
 import { getAuthor } from "@/lib/author";
 
@@ -34,7 +36,7 @@ export async function ArticleCard({ article }: ArticleCardProps) {
       <div className="zcool-work-cover">
         <span className="zcool-category-badge">{article.category}</span>
         <Image
-          src={article.coverImage}
+          src={resolveCoverImage(article.coverImage)}
           alt={article.title}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -50,7 +52,7 @@ export async function ArticleCard({ article }: ArticleCardProps) {
         <div className="mt-3 flex items-center gap-2">
           <div className="relative h-6 w-6 overflow-hidden rounded-full bg-surface">
             <Image
-              src={author.avatar}
+              src={buildAvatarSrc(author.avatar, author.avatarUpdatedAt)}
               alt={author.name}
               fill
               className="object-cover"
